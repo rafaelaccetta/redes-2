@@ -47,13 +47,32 @@ public class RTPpacket{
     //--------------------------
     header = new byte[HEADER_SIZE];
 
-    //.............
-    //TO COMPLETE
-    //.............
-    //fill the header array of byte with RTP header fields
+    //V  = 10 (2)
+    //P  = 0
+    //X  = 0
+    //CC = 0000
+    header[0] = (byte) 0b10000000;
+    
+    //M  = 0
+    //PT = 0011010 (26)
+    header[1] = (byte) 0b00011010;
 
-    //header[0] = ...
-    // .....
+    //Sequence Number
+    header[2] = (byte) (SequenceNumber >>> 8);
+    header[3] = (byte) (SequenceNumber & 0xFF);
+
+    //Timestamp
+    header[4] = (byte) (TimeStamp >>> 24);
+    header[5] = (byte) ((TimeStamp >>> 16) & 0xFF);
+    header[6] = (byte) ((TimeStamp >>> 8) & 0xFF);
+    header[7] = (byte) (TimeStamp & 0xFF);
+
+    //SSRC
+    header[8] = (byte) 0;
+    header[9] = (byte) 0;
+    header[10] = (byte) 0;
+    header[11] = (byte) 0;
+
  
 
     //fill the payload bitstream:
@@ -62,9 +81,9 @@ public class RTPpacket{
     payload = new byte[data_length];
 
     //fill payload array of byte from data (given in parameter of the constructor)
-    //......
-
-    // ! Do not forget to uncomment method printheader() below !
+    for (int i = 0; i < data_length; i++) {
+      payload[i] = data[i];
+    }
 
   }
     
@@ -170,8 +189,7 @@ public class RTPpacket{
   //--------------------------
   public void printheader()
   {
-    //TO DO: uncomment
-    /*
+
     for (int i=0; i < (HEADER_SIZE-4); i++)
       {
 	for (int j = 7; j>=0 ; j--)
@@ -183,7 +201,7 @@ public class RTPpacket{
       }
 
     System.out.println();
-    */
+    
   }
 
   //return the unsigned value of 8-bit integer nb
