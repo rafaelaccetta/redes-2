@@ -140,26 +140,22 @@ public class Client{
   //Handler for buttons
   //------------------------------------
 
-  //.............
-  //TO COMPLETE
-  //.............
-
   //Handler for Setup button
   //-----------------------
   class setupButtonListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Setup Button pressed !");      
+      System.out.println("Setup Button pressed !");      
 
       if (state == INIT) 
 	{
 	  //Init non-blocking RTPsocket that will be used to receive data
 	  try{
 	    //construct a new DatagramSocket to receive RTP packets from the server, on port RTP_RCV_PORT
-	    //RTPsocket = ...
+	    RTPsocket = new DatagramSocket(RTP_RCV_PORT);
 
 	    //set TimeOut value of the socket to 5msec.
-	    //....
+	    RTPsocket.setSoTimeout(5);
 
 	  }
 	  catch (SocketException se)
@@ -180,8 +176,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print new state 
-	      //state = ....
-	      //System.out.println("New RTSP state: ....");
+	      state = READY;
+	      System.out.println("New RTSP state: READY");
 	    }
 	}//else if state != INIT then do nothing
     }
@@ -197,7 +193,7 @@ public class Client{
       if (state == READY) 
 	{
 	  //increase RTSP sequence number
-	  //.....
+	  RTSPSeqNb += 1;
 
 
 	  //Send PLAY message to the server
@@ -209,8 +205,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print out new state
-	      //.....
-	      // System.out.println("New RTSP state: ...")
+	      state = PLAYING;
+	      System.out.println("New RTSP state: PLAYING");
 
 	      //start the timer
 	      timer.start();
@@ -230,7 +226,7 @@ public class Client{
       if (state == PLAYING) 
 	{
 	  //increase RTSP sequence number
-	  //........
+	  RTSPSeqNb += 1;
 
 	  //Send PAUSE message to the server
 	  send_RTSP_request("PAUSE");
@@ -241,8 +237,8 @@ public class Client{
 	  else 
 	    {
 	      //change RTSP state and print out new state
-	      //........
-	      //System.out.println("New RTSP state: ...");
+	      state = READY;
+	      System.out.println("New RTSP state: READY");
 	      
 	      //stop the timer
 	      timer.stop();
@@ -257,10 +253,10 @@ public class Client{
   class tearButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Teardown Button pressed !");  
+      System.out.println("Teardown Button pressed !");  
 
       //increase RTSP sequence number
-      // ..........
+      RTSPSeqNb += 1;
       
 
       //Send TEARDOWN message to the server
@@ -272,8 +268,8 @@ public class Client{
       else 
 	{     
 	  //change RTSP state and print out new state
-	  //........
-	  //System.out.println("New RTSP state: ...");
+	  state = INIT;
+	  System.out.println("New RTSP state: INIT");
 
 	  //stop the timer
 	  timer.stop();
@@ -374,10 +370,6 @@ public class Client{
   //------------------------------------
   //Send RTSP Request
   //------------------------------------
-
-  //.............
-  //TO COMPLETE
-  //.............
   
   private void send_RTSP_request(String request_type)
   {
@@ -385,15 +377,19 @@ public class Client{
       //Use the RTSPBufferedWriter to write to the RTSP socket
 
       //write the request line:
-      //RTSPBufferedWriter.write(...);
+      RTSPBufferedWriter.write(request_type + " movie.mjpeg RTSP/1.0\r\n");
 
       //write the CSeq line: 
-      //......
+      RTSPBufferedWriter.write("Cseq: " + RTSPSeqNb + "\r\n");  
 
       //check if request_type is equal to "SETUP" and in this case write the Transport: line advertising to the server the port used to receive the RTP packets RTP_RCV_PORT
-      //if ....
+      if (request_type == "SETUP") {
+        RTSPBufferedWriter.write("Transport: RTP/UDP;unicast;client_port=" + RTP_RCV_PORT + "\r\n");
+      }
       //otherwise, write the Session line from the RTSPid field
-      //else ....
+      else {
+        RTSPBufferedWriter.write("Session: " + RTSPid + "\r\n");
+      }
 
       RTSPBufferedWriter.flush();
     }
