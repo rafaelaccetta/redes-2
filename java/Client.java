@@ -188,7 +188,7 @@ public class Client{
   class playButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Play Button pressed !"); 
+      System.out.println("Play Button pressed !"); 
 
       if (state == READY) 
 	{
@@ -221,7 +221,7 @@ public class Client{
   class pauseButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e){
 
-      //System.out.println("Pause Button pressed !");   
+      System.out.println("Pause Button pressed !");   
 
       if (state == PLAYING) 
 	{
@@ -318,7 +318,7 @@ public class Client{
 	iconLabel.setIcon(icon);
       }
       catch (InterruptedIOException iioe){
-	//System.out.println("Nothing to read");
+	System.out.println("Nothing to read");
       }
       catch (IOException ioe) {
 	System.out.println("Exception caught: "+ioe);
@@ -336,7 +336,7 @@ public class Client{
     try{
       //parse status line and extract the reply_code:
       String StatusLine = RTSPBufferedReader.readLine();
-      //System.out.println("RTSP Client - Received from Server:");
+      System.out.println("RTSP Client - Received from Server:");
       System.out.println(StatusLine);
     
       StringTokenizer tokens = new StringTokenizer(StatusLine);
